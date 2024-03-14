@@ -1,0 +1,6 @@
+<h2>Список расписаний</h2>
+<ul>
+    {% for schedule in object_list %}
+    <li>{{ schedule.start_dt }} - {{ schedule.end_dt }}: {{ schedule.note }}</li>
+    {% endfor %}
+</ul>

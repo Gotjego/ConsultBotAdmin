@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="{% static 'css/tui-calendar.css' %}">
+    <!-- Подключение Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Подключение tui-code-snippet, если требуется для вашей версии TUI Calendar -->
+    <script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.min.js"></script>
+    <!-- Подключение jQuery -->
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <!-- Подключение TUI Calendar -->
+    <script src="{% static 'js/tui-calendar.js' %}"></script>
+</head>
+<body>
+    <div id="calendar"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendar = new tui.Calendar(document.getElementById('calendar'), {
+                // Настройки календаря
+                defaultView: 'month',
+                taskView: true,
+                scheduleView: ['time'],
+                useCreationPopup: true,
+                useDetailPopup: true,
+                template: {
+                    milestone: function(model) {
+                        return '<span class="calendar-milestone">' + model.content + '</span>';
+                    },
+                    allday: function(schedule) {
+                        return getTimeTemplate(schedule, true);
+                    },
+                    time: function(schedule) {
+                        return getTimeTemplate(schedule, false);
+                    }
+                }
+            });
+
+            function getTimeTemplate(schedule, isAllDay) {
+                var html = [];
+                // Используем moment для парсинга даты из строки
+                var start = moment(schedule.start);
+                if (!isAllDay) {
+                    // Форматируем время начала события
+                    html.push('<strong>' + start.format('HH:mm') + '</strong> ');
+                }
+                if (schedule.isPrivate) {
+                    html.push('<span class="calendar-font-icon ic-lock-b"></span>');
+                    html.push(' Private');
+                } else {
+                    html.push(schedule.title);
+                }
+                return html.join('');
+            }
+
+            // Загрузка событий
+            fetch('/api/events/')
+                .then(response => response.json())
+                .then(events => {
+                    calendar.createSchedules(events.map(event => {
+                        return {
+                            id: String(event.id),
+                            title: event.title,
+                            category: 'time',
+                            start: event.start, // Время начала уже должно быть в формате, пригодном для moment
+                            end: event.end, // То же для времени окончания
+                            isAllDay: false,
+                            state: 'Busy'
+                        };
+                    }));
+                })
+                .catch(error => console.error('Error fetching events:', error));
+        });
+    </script>
+</body>
+</html>
