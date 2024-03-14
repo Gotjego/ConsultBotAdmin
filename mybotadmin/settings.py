@@ -1,4 +1,7 @@
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +32,6 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',
 
 ]
-
 
 
 MIDDLEWARE = [
@@ -67,18 +69,17 @@ WSGI_APPLICATION = 'mybotadmin.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'consultbot',
-        'USER': 'admin',
-        'PASSWORD': 'qwerty2024',
-        'HOST': 'localhost',  # Или другой адрес сервера, если база находится не локально
-        'PORT': '5534',  # Стандартный порт PostgreSQL
+        'NAME': os.getenv("POSTGRES_DATABASE"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST"),  # Или другой адрес сервера, если база находится не локально
+        'PORT': os.getenv("POSTGRES_PORT"),  # Стандартный порт PostgreSQL
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

@@ -11,6 +11,7 @@ admin.site.register(Subcategories)
 admin.site.register(Users)
 admin.site.register(Event)
 
+
 @admin.register(Schedules)
 class SchedulesAdmin(admin.ModelAdmin):
     list_display = ('start_dt', 'end_dt', 'note', 'markup')
